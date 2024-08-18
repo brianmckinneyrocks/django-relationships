@@ -5,7 +5,8 @@ from django.db import models, connection
 from django.db.models.fields.related import create_many_related_manager, ManyToManyRel
 from django.utils.translation import ugettext_lazy as _
 
-from .compat import User
+#from .compat import User
+from django.contrib.auth.models import User
 
 
 class RelationshipStatusManager(models.Manager):
