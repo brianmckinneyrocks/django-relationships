@@ -265,6 +265,7 @@ elif django.VERSION > (1, 2) and django.VERSION < (1, 4):
 else:
 
     fake_rel = ManyToManyRel(
+        field,
         to=User,
         through=Relationship)
 
