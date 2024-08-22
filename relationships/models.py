@@ -50,38 +50,15 @@ class RelationshipStatus(models.Model):
         return self.name
 
 
-class Relationship(models.Model):
-    from_user = models.ForeignKey(User,
-        related_name='from_users', verbose_name=_('from user'))
-    to_user = models.ForeignKey(User,
-        related_name='to_users', verbose_name=_('to user'))
-    status = models.ForeignKey(RelationshipStatus, verbose_name=_('status'))
-    created = models.DateTimeField(_('created'), auto_now_add=True)
-    weight = models.FloatField(_('weight'), default=1.0, blank=True, null=True)
-    site = models.ForeignKey(Site, default=settings.SITE_ID,
-        verbose_name=_('site'), related_name='relationships')
 
-    objects=RelationshipManager()
-
-    class Meta:
-        unique_together = (('from_user', 'to_user', 'status', 'site'),)
-        ordering = ('created',)
-        verbose_name = _('Relationship')
-        verbose_name_plural = _('Relationships')
-
-    def __unicode__(self):
-        return (_('Relationship from %(from_user)s to %(to_user)s')
-                % {'from_user': self.from_user.username,
-                   'to_user': self.to_user.username})
-
-field = models.ManyToManyField(User, through=Relationship,
-                               symmetrical=False, related_name='related_to')
-
-
-class RelationshipManager(User._default_manager.__class__):
+class RelationshipManager(models.Manager):#(User._default_manager.__class__):
     def __init__(self, instance=None, *args, **kwargs):
         super(RelationshipManager, self).__init__(*args, **kwargs)
         self.instance = instance
+
+    def __get__(self, instance, owner):
+        # Return a new instance of the manager bound to the `instance` (User instance)
+        return self.__class__(instance=instance)
 
     def add(self, user, status=None, symmetrical=False):
         """
@@ -225,6 +202,32 @@ class RelationshipManager(User._default_manager.__class__):
     def friends(self):
         return self.get_relationships(RelationshipStatus.objects.following(), True)
 
+class Relationship(models.Model):
+    from_user = models.ForeignKey(User,
+        related_name='from_users', verbose_name=_('from user'))
+    to_user = models.ForeignKey(User,
+        related_name='to_users', verbose_name=_('to user'))
+    status = models.ForeignKey(RelationshipStatus, verbose_name=_('status'))
+    created = models.DateTimeField(_('created'), auto_now_add=True)
+    weight = models.FloatField(_('weight'), default=1.0, blank=True, null=True)
+    site = models.ForeignKey(Site, default=settings.SITE_ID,
+        verbose_name=_('site'), related_name='relationships')
+
+    objects=RelationshipManager()
+
+    class Meta:
+        unique_together = (('from_user', 'to_user', 'status', 'site'),)                                                                                                                                                   
+        ordering = ('created',)                                                                                                                                                                                           
+        verbose_name = _('Relationship')                                                                                                                                                                                  
+        verbose_name_plural = _('Relationships')                                                                                                                                                                          
+                                                                                                                                                                                                                          
+    def __unicode__(self):                                                                                                                                                                                                
+        return (_('Relationship from %(from_user)s to %(to_user)s')                                                                                                                                                       
+                % {'from_user': self.from_user.username,                                                                                                                                                                  
+                   'to_user': self.to_user.username})                                                                                                                                                                     
+                                                                                                                                                                                                                          
+field = models.ManyToManyField(User, through=Relationship,                                                                                                                                                                
+                               symmetrical=False, related_name='related_to')      
 
 #    fake_rel = ManyToManyRel(
 #        field,
@@ -247,5 +250,5 @@ class RelationshipManager(User._default_manager.__class__):
 #            return manager
 
 #HACK
-field.contribute_to_class(User, 'relationships')
-setattr(User, 'relationships', field) #RelationshipsDescriptor())
+#field.contribute_to_class(User, 'relationships')
+setattr(User, 'relationships', RelationshipManager()) #RelationshipsDescriptor())
