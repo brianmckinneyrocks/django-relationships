@@ -2,7 +2,7 @@ import django
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db import models, connection
-from django.db.models.fields.related import create_many_related_manager, ManyToManyRel
+#from django.db.models.fields.related import create_many_related_manager, ManyToManyRel
 from django.utils.translation import ugettext_lazy as _
 
 #from .compat import User
@@ -224,66 +224,26 @@ class RelationshipManager(User._default_manager.__class__):
         return self.get_relationships(RelationshipStatus.objects.following(), True)
 
 
-if django.VERSION < (1, 2):
+#    fake_rel = ManyToManyRel(
+#        field,
+#        to=User,
+#        through=Relationship)
+#
+#    RelatedManager = create_many_related_manager(RelationshipManager, fake_rel)
 
-    RelatedManager = create_many_related_manager(RelationshipManager, Relationship)
-
-    class RelationshipsDescriptor(object):
-        def __get__(self, instance, instance_type=None):
-            qn = connection.ops.quote_name
-            manager = RelatedManager(
-                model=User,
-                core_filters={'related_to__pk': instance._get_pk_val()},
-                instance=instance,
-                symmetrical=False,
-                join_table=qn('relationships_relationship'),
-                source_col_name=qn('from_user_id'),
-                target_col_name=qn('to_user_id'),
-            )
-            return manager
-
-elif django.VERSION > (1, 2) and django.VERSION < (1, 4):
-
-    fake_rel = ManyToManyRel(
-        to=User,
-        through=Relationship)
-
-    RelatedManager = create_many_related_manager(RelationshipManager, fake_rel)
-
-    class RelationshipsDescriptor(object):
-        def __get__(self, instance, instance_type=None):
-            manager = RelatedManager(
-                model=User,
-                core_filters={'related_to__pk': instance._get_pk_val()},
-                instance=instance,
-                symmetrical=False,
-                source_field_name='from_user',
-                target_field_name='to_user'
-            )
-            return manager
-
-else:
-
-    fake_rel = ManyToManyRel(
-        field,
-        to=User,
-        through=Relationship)
-
-    RelatedManager = create_many_related_manager(RelationshipManager, fake_rel)
-
-    class RelationshipsDescriptor(object):
-        def __get__(self, instance, instance_type=None):
-            manager = RelatedManager(
-                model=User,
-                query_field_name='related_to',
-                instance=instance,
-                symmetrical=False,
-                source_field_name='from_user',
-                target_field_name='to_user',
-                through=Relationship,
-            )
-            return manager
+#    class RelationshipsDescriptor(object):
+#        def __get__(self, instance, instance_type=None):
+#            manager = RelatedManager(
+#                model=User,
+#                query_field_name='related_to',
+#                instance=instance,
+#                symmetrical=False,
+#                source_field_name='from_user',
+#                target_field_name='to_user',
+#                through=Relationship,
+#            )
+#            return manager
 
 #HACK
 field.contribute_to_class(User, 'relationships')
-setattr(User, 'relationships', RelationshipsDescriptor())
+setattr(User, 'relationships', field) #RelationshipsDescriptor())
