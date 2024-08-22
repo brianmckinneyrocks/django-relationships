@@ -1,6 +1,6 @@
 from django import template
 from django.core.urlresolvers import reverse
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.template import TemplateSyntaxError
 from django.utils.functional import wraps
 from relationships.models import RelationshipStatus
@@ -109,7 +109,7 @@ def remove_relationship_url(user, status):
 def positive_filter_decorator(func):
     def inner(qs, user):
         if isinstance(qs, basestring):
-            model = get_model(*qs.split('.'))
+            model = apps.get_model(*qs.split('.'))
             if not model:
                 return []
             qs = model._default_manager.all()
@@ -123,7 +123,7 @@ def positive_filter_decorator(func):
 def negative_filter_decorator(func):
     def inner(qs, user):
         if isinstance(qs, basestring):
-            model = get_model(*qs.split('.'))
+            model = apps.get_model(*qs.split('.'))
             if not model:
                 return []
             qs = model._default_manager.all()
