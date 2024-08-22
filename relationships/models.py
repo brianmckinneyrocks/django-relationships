@@ -61,6 +61,8 @@ class Relationship(models.Model):
     site = models.ForeignKey(Site, default=settings.SITE_ID,
         verbose_name=_('site'), related_name='relationships')
 
+    objects=RelationshipManager()
+
     class Meta:
         unique_together = (('from_user', 'to_user', 'status', 'site'),)
         ordering = ('created',)
