@@ -2,10 +2,8 @@ import django
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db import models, connection
-#from django.db.models.fields.related import create_many_related_manager, ManyToManyRel
 from django.utils.translation import ugettext_lazy as _
 
-#from .compat import User
 from django.contrib.auth.models import User
 
 
@@ -50,8 +48,7 @@ class RelationshipStatus(models.Model):
         return self.name
 
 
-
-class RelationshipManager(models.Manager):#(User._default_manager.__class__):
+class RelationshipManager(models.Manager):
     def __init__(self, instance=None, *args, **kwargs):
         super(RelationshipManager, self).__init__(*args, **kwargs)
         self.instance = instance
@@ -202,6 +199,7 @@ class RelationshipManager(models.Manager):#(User._default_manager.__class__):
     def friends(self):
         return self.get_relationships(RelationshipStatus.objects.following(), True)
 
+
 class Relationship(models.Model):
     from_user = models.ForeignKey(User,
         related_name='from_users', verbose_name=_('from user'))
@@ -226,29 +224,5 @@ class Relationship(models.Model):
                 % {'from_user': self.from_user.username,                                                                                                                                                                  
                    'to_user': self.to_user.username})                                                                                                                                                                     
                                                                                                                                                                                                                           
-field = models.ManyToManyField(User, through=Relationship,                                                                                                                                                                
-                               symmetrical=False, related_name='related_to')      
 
-#    fake_rel = ManyToManyRel(
-#        field,
-#        to=User,
-#        through=Relationship)
-#
-#    RelatedManager = create_many_related_manager(RelationshipManager, fake_rel)
-
-#    class RelationshipsDescriptor(object):
-#        def __get__(self, instance, instance_type=None):
-#            manager = RelatedManager(
-#                model=User,
-#                query_field_name='related_to',
-#                instance=instance,
-#                symmetrical=False,
-#                source_field_name='from_user',
-#                target_field_name='to_user',
-#                through=Relationship,
-#            )
-#            return manager
-
-#HACK
-#field.contribute_to_class(User, 'relationships')
-setattr(User, 'relationships', RelationshipManager()) #RelationshipsDescriptor())
+setattr(User, 'relationships', RelationshipManager())
