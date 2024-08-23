@@ -1,7 +1,7 @@
 from django import template
 from django.core.urlresolvers import reverse
 from django.apps import apps
-from django.template import TemplateSyntaxError
+from django.template import TemplateSyntaxError, Variable
 from django.utils.functional import wraps
 from relationships.models import RelationshipStatus
 from relationships.utils import positive_filter, negative_filter
@@ -17,8 +17,8 @@ class IfRelationshipNode(template.Node):
         self.status = self.status.replace('"', '')  # strip quotes
 
     def render(self, context):
-        from_user = template.resolve_variable(self.from_user, context)
-        to_user = template.resolve_variable(self.to_user, context)
+        from_user = Variable(self.from_user).resolve(context) 
+        to_user = Variable(self.to_user).resolve(context)
 
         if from_user.is_anonymous() or to_user.is_anonymous():
             return self.nodelist_false.render(context)
