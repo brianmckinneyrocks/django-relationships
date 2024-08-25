@@ -202,14 +202,14 @@ class RelationshipManager(models.Manager):
 
 class Relationship(models.Model):
     from_user = models.ForeignKey(User,
-        related_name='from_users', verbose_name=_('from user'))
+        related_name='from_users', verbose_name=_('from user'), on_delete=models.CASCADE)
     to_user = models.ForeignKey(User,
-        related_name='to_users', verbose_name=_('to user'))
-    status = models.ForeignKey(RelationshipStatus, verbose_name=_('status'))
+        related_name='to_users', verbose_name=_('to user'), on_delete=models.CASCADE)
+    status = models.ForeignKey(RelationshipStatus, verbose_name=_('status'), null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(_('created'), auto_now_add=True)
     weight = models.FloatField(_('weight'), default=1.0, blank=True, null=True)
     site = models.ForeignKey(Site, default=settings.SITE_ID,
-        verbose_name=_('site'), related_name='relationships')
+        verbose_name=_('site'), related_name='relationships', null=True, on_delete=models.SET_NULL)
 
     objects=RelationshipManager()
 
