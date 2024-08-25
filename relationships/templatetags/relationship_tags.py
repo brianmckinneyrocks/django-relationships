@@ -20,7 +20,7 @@ class IfRelationshipNode(template.Node):
         from_user = Variable(self.from_user).resolve(context) 
         to_user = Variable(self.to_user).resolve(context)
 
-        if from_user.is_anonymous() or to_user.is_anonymous():
+        if from_user.is_anonymous or to_user.is_anonymous:
             return self.nodelist_false.render(context)
 
         try:
