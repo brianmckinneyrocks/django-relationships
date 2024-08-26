@@ -44,7 +44,7 @@ class RelationshipStatus(models.Model):
         verbose_name = _('Relationship status')
         verbose_name_plural = _('Relationship statuses')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -219,7 +219,7 @@ class Relationship(models.Model):
         verbose_name = _('Relationship')                                                                                                                                                                                  
         verbose_name_plural = _('Relationships')                                                                                                                                                                          
                                                                                                                                                                                                                           
-    def __unicode__(self):                                                                                                                                                                                                
+    def __str__(self):                                                                                                                                                                                                
         return (_('Relationship from %(from_user)s to %(to_user)s')                                                                                                                                                       
                 % {'from_user': self.from_user.username,                                                                                                                                                                  
                    'to_user': self.to_user.username})                                                                                                                                                                     
