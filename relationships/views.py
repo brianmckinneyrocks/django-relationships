@@ -86,7 +86,7 @@ def relationship_handler(request, user, status_slug, add=True,
 
         if request.is_ajax():
             response = {'result': '1'}
-            return HttpResponse(json.dumps(response), mimetype="application/json")
+            return HttpResponse(json.dumps(response), content_type="application/json")
 
         if request.GET.get('next'):
             return HttpResponseRedirect(request.GET['next'])
